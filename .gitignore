@@ -1,0 +1,7 @@
+/dist
+/tmp
+/node_modules
+/docs
+*.log
+/.sass-cache
+deploy.json
