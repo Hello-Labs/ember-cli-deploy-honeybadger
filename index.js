@@ -44,13 +44,17 @@ module.exports = {
         this.uploadSourceMap.bind(this);
       },
 
-      upload: function(/* context */) {
+      /**
+       * Need to upload source maps before any compression plugins are run, which typically
+       * occurs in the willUpload hook.
+       */
+      didPrepare: function(/* context */) {
         let promises = Object.keys(this.mapFiles).map(jsFileName => {
           let mapFileName = this.mapFiles[jsFileName];
           if (mapFileName) {
             return this.uploadSourceMap(jsFileName, this.mapFiles[jsFileName]);
           }
-          return new Promise(resolve => resolve());
+          return new RSVP.Promise(resolve => resolve());
         });
         return RSVP.all(promises)
           .then(() => this.log(`ok ${this.success}; fail ${this.fail}`));
@@ -64,40 +68,34 @@ module.exports = {
             api_key: this.apiKey,
             revision: this.revision,
             minified_url: `${this.assetsUrl}/${jsFileName}`,
-            ...this._filesFormData(this.assetsDir, jsFileName, mapFileName)
+            minified_file: {
+              value: fs.createReadStream(`${this.assetsDir}/${jsFileName}`),
+              options: {
+                filename: jsFileName,
+                contentType: 'text/javascript'
+              }
+            },
+            source_map: {
+              value: fs.createReadStream(`${this.assetsDir}/${mapFileName}`),
+              options: {
+                filename: mapFileName,
+                contentType: 'application/octet-stream'
+              }
+            }
           }
         };
 
         let that = this;
         return request(options)
           .then(() => {
-            that.log(`✔\tsuccess - js: ${jsFileName}, map: ${mapFileName}`);
+            that.log(`✔  success - js: ${jsFileName}, map: ${mapFileName}`);
             that.success++;
           })
           .catch(error => {
-            that.log(`x\tfail - js: ${jsFileName}, map: ${mapFileName}`, { color: 'red' });
+            that.log(`x  fail - js: ${jsFileName}, map: ${mapFileName}`, { color: 'red' });
             that.log(`error: ${error}`, { color: 'red' });
             that.fail++;
           });
-      },
-
-      _filesFormData(assetsDir, jsFileName, mapFileName) {
-        return {
-          minified_file: {
-            value: fs.createReadStream(`${assetsDir}/${jsFileName}`),
-            options: {
-              filename: jsFileName,
-              contentType: 'text/javascript'
-            }
-          },
-          source_map: {
-            value: fs.createReadStream(`${assetsDir}/${mapFileName}`),
-            options: {
-              filename: mapFileName,
-              contentType: 'application/octet-stream'
-            }
-          }
-        };
       }
     });
 
