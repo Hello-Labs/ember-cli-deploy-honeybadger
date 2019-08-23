@@ -1,10 +1,12 @@
 {
   "name": "ember-cli-deploy-honeybadger",
-  "version": "0.1",
+  "version": "0.1.0",
+  "description": "An ember-cli-deploy plugin to upload source maps to honeybadger",
   "keywords": [
     "ember-addon",
     "ember-cli-deploy-plugin"
   ],
+  "repository": "https://github.com/hello-labs/ember-cli-deploy-honeybadger",
   "dependencies": {
     "ember-cli-deploy-plugin": "~0.2.9",
     "minimatch": "~3.0.4",
@@ -14,5 +16,6 @@
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"
-  }
+  },
+  "private": true
 }
