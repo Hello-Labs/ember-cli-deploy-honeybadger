@@ -37,8 +37,9 @@ module.exports = {
         let assets = fs.readdirSync(this.assetsDir);
         let jsFiles = assets.filter(file => minimatch(file, `**/${this.filePattern}.js`));
         jsFiles.forEach(jsFile => {
-          this.mapFiles[jsFile] = assets.find(file => minimatch(file, `${this.filePattern}.map`));
-          this.log(`found map ${this.mapFiles[jsFile]}`);
+          let filePrefix = jsFile.substr(0, jsFile.lastIndexOf('-'));
+          this.mapFiles[jsFile] = assets.find(file => minimatch(file, `${filePrefix}*.map`));
+          this.log(`found map ${this.mapFiles[jsFile]} for ${jsFile}`);
         });
 
         this.uploadSourceMap.bind(this);
