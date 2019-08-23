@@ -1,5 +1,6 @@
 {
   "name": "ember-cli-deploy-honeybadger",
+  "version": "0.1",
   "keywords": [
     "ember-addon",
     "ember-cli-deploy-plugin"
