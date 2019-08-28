@@ -41,7 +41,8 @@ For detailed information on what plugin hooks are and how they work, please refe
 [Plugin Documentation][1].
 
 - `prepare`
-- `upload`
+- `didPrepare`; maps need to be uploaded before any file compression occurs, which tends to happen before the
+`upload` hook, so we need to ensure this occurs first.
 
 ## Configuration Options
 
